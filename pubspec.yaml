@@ -37,6 +37,8 @@ dependencies:
   cupertino_icons: ^1.0.6
   flutter_svg: ^2.0.10+1
   lottie: ^3.1.2
+  http: ^1.2.1
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:
@@ -64,9 +66,12 @@ flutter:
   assets:
     - assets/
     - assets/sun.json
+    - assets/cloud.json
+    - assets/rain.json
+    - assets/snow.json
     - assets/svgs/humidity.svg
     - assets/svgs/rain.svg
-    - assets/svgs/see.svg
+    - assets/svgs/sea.svg
     - assets/svgs/sunrise.svg
     - assets/svgs/sunset.svg
     - assets/svgs/windspeed.svg

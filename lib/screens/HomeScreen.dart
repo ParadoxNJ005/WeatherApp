@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:lottie/lottie.dart'; // Ensure you have lottie package imported
+import 'package:lottie/lottie.dart';
+import 'package:weather/Models/WeatherModel.dart';
+import 'package:weather/service/apis.dart';
+import 'package:weather/service/season.dart';
+import 'package:intl/intl.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,6 +15,13 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool _isSearching = false;
+  Future<Wea>? _weatherData;
+
+  @override
+  void initState() {
+    super.initState();
+    _weatherData = APIs.fetch("jaipur");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,87 +41,100 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         },
         child: Scaffold(
-          body: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/sunny.jpg"),
-                fit: BoxFit.cover,
-              ),
-            ),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Positioned(
-                  top: mq.height * 0.052,
-                  child: Column(
-                    children: [
-                      search(mq),
-                      SizedBox(
-                        height: 10,
+          body: FutureBuilder<Wea>(
+              future: _weatherData,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return Text("Error: ${snapshot.error}");
+                } else if (snapshot.hasData) {
+                  final weather = snapshot.data!;
+                  return Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage("assets/sunny.jpg"),
+                        fit: BoxFit.cover,
                       ),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.location_on_outlined,
-                            color: Colors.black,
-                            size: mq.height * .04,
+                    ),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Positioned(
+                          top: mq.height * 0.052,
+                          child: Column(
+                            children: [
+                              search(mq, weather),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.location_on_outlined,
+                                    color: Colors.black,
+                                    size: mq.height * .04,
+                                  ),
+                                  Text(
+                                    weather.name,
+                                    style: TextStyle(
+                                        fontSize: mq.height * .03,
+                                        fontWeight: FontWeight.bold),
+                                  )
+                                ],
+                              ),
+                              SizedBox(
+                                height: 30,
+                              ),
+                              weatherRow(mq, weather),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Text(
+                                APIs.formatDayOfWeek(weather.sys.sunrise),
+                                style: TextStyle(
+                                    fontSize: mq.height * .025,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                APIs.formatDate(weather.sys.sunrise),
+                                style: TextStyle(
+                                    fontSize: mq.height * .025,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                              SizedBox(
+                                height: 30,
+                              ),
+                              details(mq, weather),
+                              SizedBox(
+                                height: mq.height * 0.04,
+                              ),
+                              Text(
+                                "Designed By \n     Naitik",
+                                style: TextStyle(
+                                    fontSize: mq.height * 0.02,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              )
+                            ],
                           ),
-                          Text(
-                            "Delhi",
-                            style: TextStyle(
-                                fontSize: mq.height * .03,
-                                fontWeight: FontWeight.bold),
-                          )
-                        ],
-                      ),
-                      SizedBox(
-                        height: 30,
-                      ),
-                      weatherRow(mq),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Text(
-                        "Tuesday",
-                        style: TextStyle(
-                            fontSize: mq.height * .025,
-                            fontWeight: FontWeight.w500),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        "25 January 2024",
-                        style: TextStyle(
-                            fontSize: mq.height * .025,
-                            fontWeight: FontWeight.w500),
-                      ),
-                      SizedBox(
-                        height: 30,
-                      ),
-                      details(mq),
-                      SizedBox(
-                        height: mq.height * 0.04,
-                      ),
-                      Text(
-                        "Designed By \n     Naitik",
-                        style: TextStyle(
-                            fontSize: mq.height * 0.02,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
-                      )
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
+                        )
+                      ],
+                    ),
+                  );
+                } else {
+                  return Text("No data");
+                }
+              }),
         ),
       ),
     );
   }
 
-  Widget search(Size mq) {
+  Widget search(Size mq, Wea weather) {
     return InkWell(
       onTap: () {
         setState(() {
@@ -146,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       )
                     : Text(
-                        'Delhi',
+                        '${weather.name}',
                         style: TextStyle(fontSize: mq.height * 0.03),
                       ),
               ),
@@ -169,7 +193,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget weatherRow(Size mq) {
+  Widget weatherRow(Size mq, Wea weather) {
     return Container(
       width: mq.width,
       padding: EdgeInsets.symmetric(horizontal: mq.width * 0.05),
@@ -184,18 +208,18 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Center(
                   child: Lottie.asset(
-                    'assets/sun.json',
-                    width: mq.width * 0.31,
-                    height: mq.height * 0.15,
+                    'assets/${season.ani(weather.weather[0].description.toString())}.json',
+                    width: mq.width * 1,
+                    height: mq.height * 0.2,
                     fit: BoxFit.fill,
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 5.0),
-                  child: Text('Sunny',
+                  child: Text('${weather.weather[0].description.toString()}',
                       style: TextStyle(
-                          fontSize: mq.height * 0.04,
-                          fontWeight: FontWeight.w400)),
+                          fontSize: mq.height * 0.05,
+                          fontWeight: FontWeight.w500)),
                 )
               ],
             ),
@@ -226,7 +250,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       TextSpan(
                         children: [
                           TextSpan(
-                            text: "31",
+                            text: weather.main.temp.round().toString(),
                             style: TextStyle(
                               fontSize: mq.height * 0.12,
                               fontWeight: FontWeight.bold,
@@ -262,7 +286,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           TextSpan(
                             children: [
                               TextSpan(
-                                text: "Min: 23.22",
+                                text: "Min: ${weather.main.tempMin}",
                                 style: TextStyle(
                                   fontSize: mq.height * 0.027,
                                   fontWeight: FontWeight.bold,
@@ -294,7 +318,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           TextSpan(
                             children: [
                               TextSpan(
-                                text: "Max: 23.22",
+                                text: "Max: ${weather.main.tempMax}",
                                 style: TextStyle(
                                   fontSize: mq.height * 0.027,
                                   fontWeight: FontWeight.bold,
@@ -328,7 +352,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget details(Size mq) {
+  Widget details(Size mq, Wea weather) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(15),
       child: Container(
@@ -350,6 +374,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
+                //---humidity-----//
                 ClipRRect(
                     borderRadius: BorderRadius.circular(15),
                     child: Container(
@@ -373,7 +398,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             height: 10,
                           ),
                           Text(
-                            "70",
+                            weather.main.humidity.toString(),
                             style: TextStyle(
                                 fontSize: mq.height * .025,
                                 fontWeight: FontWeight.bold),
@@ -387,6 +412,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     )),
+
+                //-----wind speed-----//
                 ClipRRect(
                     borderRadius: BorderRadius.circular(15),
                     child: Container(
@@ -410,7 +437,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             height: 10,
                           ),
                           Text(
-                            "3.33",
+                            weather.wind.speed.toString(),
                             style: TextStyle(
                                 fontSize: mq.height * .025,
                                 fontWeight: FontWeight.bold),
@@ -424,6 +451,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     )),
+
+                //----Condition------------//
                 ClipRRect(
                     borderRadius: BorderRadius.circular(15),
                     child: Container(
@@ -447,7 +476,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             height: 10,
                           ),
                           Text(
-                            "Rain",
+                            weather.weather[0].description,
                             style: TextStyle(
                                 fontSize: mq.height * .025,
                                 fontWeight: FontWeight.bold),
@@ -468,6 +497,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
+                //-------sunrise----------------//
                 ClipRRect(
                     borderRadius: BorderRadius.circular(15),
                     child: Container(
@@ -491,7 +521,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             height: 10,
                           ),
                           Text(
-                            "10054",
+                            APIs.formatTimestamp(weather.sys.sunrise),
                             style: TextStyle(
                                 fontSize: mq.height * .025,
                                 fontWeight: FontWeight.bold),
@@ -505,6 +535,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     )),
+
+                //-------sunset-----------------//
                 ClipRRect(
                     borderRadius: BorderRadius.circular(15),
                     child: Container(
@@ -528,7 +560,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             height: 10,
                           ),
                           Text(
-                            "10054",
+                            APIs.formatTimestamp(weather.sys.sunset),
                             style: TextStyle(
                                 fontSize: mq.height * .025,
                                 fontWeight: FontWeight.bold),
@@ -542,6 +574,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     )),
+
+                //------sealevel-----------------//
                 ClipRRect(
                     borderRadius: BorderRadius.circular(15),
                     child: Container(
@@ -558,14 +592,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           SvgPicture.asset(
-                            "assets/svgs/see.svg",
+                            "assets/svgs/sea.svg",
                             height: mq.height * .03,
                           ),
                           SizedBox(
                             height: 10,
                           ),
                           Text(
-                            "100",
+                            weather.main.seaLevel.toString(),
                             style: TextStyle(
                                 fontSize: mq.height * .025,
                                 fontWeight: FontWeight.bold),
