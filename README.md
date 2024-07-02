@@ -30,7 +30,7 @@ Interactive UI: Gesture detectors and snackbars are implemented for better user 
 Local Storage:->
 Persistent Data: The last searched city's data is stored securely on the device using flutter_secure_storage: ^9.2.2.
 
-# Swipe Down functionality to refresh the page of the application.
+ Swipe Down functionality to refresh the page of the application.
 
 Dependencies:
 
