@@ -12,21 +12,14 @@ City Weather Search:
 
 
 Retrieve weather details for the searched city.
- 
 Display includes:->
 
-Current temperature
-
-Weather condition
-
-Maximum and minimum temperatures
-
-Humidity
-
-Wind speed
-
-Sea level
-
+Current temperature, 
+Weather condition, 
+ , Maximum and minimum temperatures
+ , Humidity 
+ ,Wind speed
+Sea level ,
 Sunrise and sunset times
 
 UI/UX Enhancements:->
@@ -35,8 +28,6 @@ Lottie Animations: Used for dynamic and engaging animations.
 Interactive UI: Gesture detectors and snackbars are implemented for better user interaction and feedback.
 
 Local Storage:->
-
-
 Persistent Data: The last searched city's data is stored securely on the device using flutter_secure_storage: ^9.2.2.
 
 Dependencies:
