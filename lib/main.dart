@@ -6,6 +6,7 @@ void main() {
   runApp(const MyApp());
 }
 
+//------------------------------Media queries (mq)----------------------//
 late Size mq;
 
 class MyApp extends StatefulWidget {
@@ -21,7 +22,8 @@ class _MyAppState extends State<MyApp> {
     mq = MediaQuery.of(context).size;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomeScreen(),
+      theme: ThemeData(brightness: Brightness.light),
+      home: SplashScreen(),
     );
   }
 }

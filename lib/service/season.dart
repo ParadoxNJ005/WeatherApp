@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 
+//----------------This Page Maps the type of weather into cloady , rain , show and sunny----------------//
 class season {
   static String ani(String type) {
     type = type.toLowerCase();

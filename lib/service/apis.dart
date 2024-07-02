@@ -8,9 +8,12 @@ import 'package:weather/Models/WeatherModel.dart';
 class APIs {
   //https://api.openweathermap.org/data/2.5/weather?q=russia&APPID=cd2e34eee5dbf80c8197c24f3701fd7a
 
+  //-----------------------------------Constants(base url and apikey)-----------------------------------------------//
   static final String baseUrl = "https://api.openweathermap.org/data/2.5/";
   static final String apiKey = "cd2e34eee5dbf80c8197c24f3701fd7a";
+  //--------------------------------------------------------------------------------------------//
 
+  //----------------------------------fetch the api--------------------------------------------//
   static Future<Wea> fetch(String city) async {
     final String url =
         baseUrl + "weather?q=${city}&units=metric&APPID=${apiKey}";
@@ -28,7 +31,9 @@ class APIs {
       throw Exception('Failed to load weather data');
     }
   }
+  //------------------------------------------------------------------------------------------//
 
+  //--------------------------convert timestamp ot hh:mm format---------------------------------//
   static String formatTimestamp(int timestamp) {
     DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
 
@@ -37,7 +42,9 @@ class APIs {
 
     return formattedTime;
   }
+  //------------------------------------------------------------------------------------------//
 
+  //--------------------------convert timestamp to day of week format---------------------------//
   static String formatDayOfWeek(int timestamp) {
     DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
 
@@ -46,7 +53,9 @@ class APIs {
 
     return dayOfWeek;
   }
+  //-----------------------------------------------------------------------------------------//
 
+  //---------------------------------Convert timestamp to dd mmmm yyyy format----------------------------//
   static String formatDate(int timestamp) {
     DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
 
@@ -55,7 +64,9 @@ class APIs {
 
     return formattedDate;
   }
+  //-----------------------------------------------------------------------------------------------------//
 
+  //-----------------------------------Snackbar-----------------------------------------------------//
   static void showSnackbar(BuildContext context, String msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(
@@ -65,4 +76,5 @@ class APIs {
         backgroundColor: Colors.red.withOpacity(.8),
         behavior: SnackBarBehavior.floating));
   }
+  //-------------------------------------------------------------------------------------------------//
 }
