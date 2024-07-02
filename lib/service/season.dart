@@ -1,26 +1,29 @@
+import 'package:flutter/services.dart';
+
 class season {
   static String ani(String type) {
-    if (type == "Clear Sky" || type == "Sunny" || type == "Clear") {
+    type = type.toLowerCase();
+    if (type == "clear sky" || type == "sunny" || type == "clear") {
       return "sun";
-    } else if (type == "Partly Clouds" ||
-        type == "Clouds" ||
-        type == "Overcast" ||
-        type == "Mist" ||
-        type == "Foggy" ||
-        type == "Haze") {
+    } else if (type == "partly clouds" ||
+        type == "clouds" ||
+        type == "overcast" ||
+        type == "mist" ||
+        type == "foggy" ||
+        type == "haze") {
       return "cloud";
-    } else if (type == "Light Rain" ||
-        type == "Drizzle" ||
-        type == "Moderate Rain" ||
-        type == "Showers" ||
-        type == "Heavy Rain" ||
-        type == "Rain") {
+    } else if (type == "light rain" ||
+        type == "drizzle" ||
+        type == "moderate rain" ||
+        type == "showers" ||
+        type == "heavy rain" ||
+        type == "rain") {
       return "rain";
-    } else if (type == "Light Snow" ||
-        type == "Moderate Snow" ||
-        type == "Heavy Snow" ||
-        type == "Blizzed" ||
-        type == "Snow") {
+    } else if (type == "light snow" ||
+        type == "moderate snow" ||
+        type == "heavy snow" ||
+        type == "blizzed" ||
+        type == "snow") {
       return "snow";
     } else {
       return "cloud";

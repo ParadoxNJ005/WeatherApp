@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
@@ -16,11 +18,20 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool _isSearching = false;
   Future<Wea>? _weatherData;
+  String lastsearch = "Jaipur";
+  final _formKey = GlobalKey<FormState>();
+  TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _weatherData = APIs.fetch("jaipur");
+    _weatherData = APIs.fetch("sikkim");
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -47,13 +58,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return CircularProgressIndicator();
                 } else if (snapshot.hasError) {
+                  log("Error: ${snapshot.error}");
                   return Text("Error: ${snapshot.error}");
                 } else if (snapshot.hasData) {
                   final weather = snapshot.data!;
                   return Container(
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: AssetImage("assets/sunny.jpg"),
+                        image: AssetImage(
+                            "assets/${season.ani(weather.weather[0].description.toString())}.jpg"),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -161,13 +174,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     ? Padding(
                         padding: EdgeInsets.only(left: 10),
                         child: TextField(
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            hintText: 'City name ...',
-                          ),
-                          autofocus: true,
-                          onChanged: (val) {},
-                        ),
+                            controller: _searchController,
+                            decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              hintText: 'City name ...',
+                            ),
+                            autofocus: true,
+                            onChanged: (val) {}),
                       )
                     : Text(
                         '${weather.name}',
@@ -178,12 +191,29 @@ class _HomeScreenState extends State<HomeScreen> {
                   ? Padding(
                       padding: const EdgeInsets.only(right: 10),
                       child: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              _isSearching = !_isSearching;
-                            });
+                          onPressed: () async {
+                            if (_searchController.text.isEmpty) {
+                              APIs.showSnackbar(
+                                  context, "City name cannot be empty");
+                            } else {
+                              try {
+                                final weather =
+                                    await APIs.fetch(_searchController.text);
+                                setState(() {
+                                  lastsearch = _searchController.text;
+                                  _weatherData = Future.value(weather);
+                                  _isSearching = false;
+                                });
+                              } catch (e) {
+                                _searchController.clear();
+                                setState(() {
+                                  _isSearching = !_isSearching;
+                                  APIs.showSnackbar(context, "City Not Found");
+                                });
+                              }
+                            }
                           },
-                          icon: Icon(Icons.cancel_outlined)),
+                          icon: Icon(Icons.logout)),
                     )
                   : Container()
             ],
@@ -218,7 +248,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.only(top: 5.0),
                   child: Text('${weather.weather[0].description.toString()}',
                       style: TextStyle(
-                          fontSize: mq.height * 0.05,
+                          fontSize: mq.height * 0.04,
                           fontWeight: FontWeight.w500)),
                 )
               ],
@@ -476,9 +506,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             height: 10,
                           ),
                           Text(
-                            weather.weather[0].description,
+                            weather.weather[0].description.trim(),
                             style: TextStyle(
-                                fontSize: mq.height * .025,
+                                fontSize: mq.height * .015,
                                 fontWeight: FontWeight.bold),
                           ),
                           Text(
