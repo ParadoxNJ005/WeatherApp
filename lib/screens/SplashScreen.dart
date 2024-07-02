@@ -67,7 +67,7 @@ class _SplashScreenState extends State<SplashScreen> {
             children: [
               //------------------------------Text(Quote)----------------------------------------//
               Positioned(
-                top: mq.height * 0.4,
+                top: mq.height * 0.55,
                 child: Text(
                   '    Weather Matters,\nWe\'ve Got the Details',
                   style: TextStyle(
@@ -88,7 +88,7 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
               //------------------------------sun svg-------------------------------------------//
               Positioned(
-                top: mq.height * 0.15,
+                top: mq.height * 0.05,
                 child: Padding(
                   padding: EdgeInsets.only(right: 180),
                   child: SvgPicture.asset(
@@ -113,7 +113,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
               //-------------------------------------Text Form Field(Enter City)-----------------------//
               Positioned(
-                top: mq.height * 0.6,
+                top: mq.height * 0.7,
                 child: Container(
                   width: mq.width * 0.8,
                   height: mq.height * 0.07,
@@ -151,7 +151,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
               //----------------------------------------Submit Button------------------------------//
               Positioned(
-                top: mq.height * 0.68,
+                top: mq.height * 0.78,
                 child: Container(
                   width: mq.width * .8,
                   height: mq.height * 0.05,
